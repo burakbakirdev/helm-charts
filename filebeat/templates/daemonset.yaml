@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "filebeat.fullname" . }}
+  labels:
+    {{- include "filebeat.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.daemonset.annotations | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "filebeat.selectorLabels" . | nindent 6 }}
+  updateStrategy:
+    type: {{ .Values.updateStrategy | default "RollingUpdate" }}
+  template:
+    metadata:
+      labels:
+        {{- include "filebeat.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "filebeat.serviceAccountName" . }}
+      hostNetwork: {{ .Values.daemonset.hostNetworking }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      dnsConfig:
+        {{- toYaml .Values.dnsConfig | nindent 8 }}
+      hostAliases:
+        {{- toYaml .Values.hostAliases | nindent 8 }}
+      containers:
+        - name: filebeat
+          image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            {{- toYaml .Values.daemonset.extraEnvs | nindent 12 }}
+          volumeMounts:
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            {{- range .Values.daemonset.extraVolumeMounts }}
+            - {{ toYaml . | nindent 12 }}
+            {{- end }}
+            {{- range .Values.daemonset.secretMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .path }}
+              readOnly: true
+            {{- end }}
+          securityContext:
+            runAsUser: {{ .Values.daemonset.securityContext.runAsUser }}
+            privileged: {{ .Values.daemonset.securityContext.privileged }}
+          resources:
+            {{- toYaml .Values.daemonset.resources | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+      volumes:
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+        {{- range .Values.daemonset.extraVolumes }}
+        - {{ toYaml . | nindent 8 }}
+        {{- end }}
+        {{- range .Values.daemonset.secretMounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+        {{- end }}
+      affinity:
+        {{- toYaml .Values.daemonset.affinity | nindent 8 }}
+      nodeSelector:
+        {{- toYaml .Values.daemonset.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.daemonset.tolerations | nindent 8 }}
