@@ -19,7 +19,6 @@ spec:
       annotations:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "filebeat.serviceAccountName" . }}
       hostNetwork: {{ .Values.daemonset.hostNetworking }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
       priorityClassName: {{ .Values.priorityClassName | quote }}

@@ -3,12 +3,12 @@ entries:
   filebeat:
   - apiVersion: v2
     appVersion: 8.5.1
-    created: "2025-05-13T14:54:58.046296671+03:00"
+    created: "2025-05-13T14:58:56.542377735+03:00"
     description: A Helm chart for Kubernetes
-    digest: 322b714d483bbb16e5fb3c2b32810a13ab0de3a36f5d96a2818574c63ed7a07e
+    digest: 48cef57aa4b11699f20083bd45275dc4592abe3c8bebeb0a118d37b15e845ea3
     name: filebeat
     type: application
     urls:
     - https://burakbakirdev.github.io/helm-charts/charts/filebeat-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-13T14:54:58.045153527+03:00"
+generated: "2025-05-13T14:58:56.539811111+03:00"
