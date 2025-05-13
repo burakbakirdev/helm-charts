@@ -50,7 +50,8 @@ daemonset:
         host: ["logstash-logstash:5044"]
   # Only used when updateStrategy is set to "RollingUpdate"
   maxUnavailable: 1
-  nodeSelector: {}
+  nodeSelector:
+    role: elk
   # A list of secrets and their paths to mount inside the pod
   # This is useful for mounting certificates for security other sensitive values
   secretMounts:
@@ -74,7 +75,11 @@ daemonset:
     limits:
       cpu: "1000m"
       memory: "200Mi"
-  tolerations: []
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "elk"
+      effect: "NoSchedule"
 
 deployment:
   # Annotations to apply to the deployment
@@ -229,7 +234,6 @@ podAnnotations: {}
 # iam.amazonaws.com/role: es-cluster
 
 # Custom service account override that the pod will use
-
 
 # Annotations to add to the ServiceAccount that is created if the serviceAccount value isn't set.
 
