@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "filebeat.fullname" . }}:{{ .Values.service.port }}']
+      args: ['http://{{ include "filebeat.fullname" . }}:{{ .Values.service.port | default 5044 }}']
   restartPolicy: Never
